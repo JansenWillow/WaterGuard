@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/backgrond"
+    android:fitsSystemWindows="true"
+    android:gravity="center_horizontal"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:id="@+id/ll_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:background="@color/primary"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_menu"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/apps"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/information"
+            android:textSize="30sp"
+            android:gravity="center_horizontal"
+            android:layout_weight="1"
+            android:textColor="@color/white" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/iv_profile"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/profile"/>
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:adjustViewBounds="true"
+                android:layout_marginHorizontal="16dp"
+                android:src="@drawable/information_one" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:adjustViewBounds="true"
+                android:layout_marginHorizontal="16dp"
+                android:src="@drawable/information_two" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:adjustViewBounds="true"
+                android:layout_marginHorizontal="16dp"
+                android:src="@drawable/information_three" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/backgrond"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/table_education" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:textColor="@color/black"
+            android:text="Tips Penting untuk Pengguna Aplikasi:\n• Jika pH air &lt; 5 atau &gt; 9, jangan langsung digunakan untuk minum.\n• Lakukan tindakan cepat seperti merebus air, menggunakan filter, atau melaporkan melalui aplikasi.\n• Selalu cek secara berkala terutama saat musim hujan atau saat air berubah warna/bau."/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:textColor="@color/black"
+            android:text="Cara Sederhana Mengecek pH Air:\n1. Gunakan strip uji pH (bisa dibeli murah di toko alat kesehatan/laboratorium).\n 2. Celupkan strip ke dalam sampel air selama beberapa detik.\n 3.Cocokkan warna strip dengan tabel warna pH seperti pada gambar.\n 4.Catat hasilnya, lalu masukkan ke aplikasi untuk melihat rekomendasi atau peringatan."/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:textColor="@color/black"
+            android:text="Mengapa pH Penting untuk Air Bersih?\n• Air yang terlalu asam (pH rendah) bisa menyebabkan korosi pada pipa dan berisiko bagi kesehatan gigi serta sistem pencernaan.\n• Air yang terlalu basa (pH tinggi) bisa terasa pahit, mengandung logam berat, atau merusak kulit.\n• Air yang ideal untuk dikonsumsi memiliki pH antara 6,5 hingga 8,5 (mendekati netral)."/>
+
+    </LinearLayout>
+
+</ScrollView>
