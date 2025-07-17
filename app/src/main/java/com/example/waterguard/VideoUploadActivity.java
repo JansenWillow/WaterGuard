@@ -1,9 +1,9 @@
 package com.example.waterguard;
 
 import android.Manifest;
-import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
@@ -13,17 +13,13 @@ import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.provider.MediaStore;
 import android.util.Size;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,6 +29,8 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.waterguard.adapter.CommentAdapter;
 import com.example.waterguard.model.Comment;
 
@@ -48,12 +46,11 @@ public class VideoUploadActivity extends AppCompatActivity {
     private Button btnSend;
     private LinearLayout llQuestions;
     private RadioGroup rgVote;
-    private TextView tvAnswer;
-    private EditText etComments;
     private RecyclerView rvComments;
     private CommentAdapter commentAdapter;
     private Uri selectedVideoUri;
     private boolean isVideoSelected = false;
+    private Bitmap videoThumbnail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +70,6 @@ public class VideoUploadActivity extends AppCompatActivity {
         btnSend = findViewById(R.id.btn_send);
         llQuestions = findViewById(R.id.ll_questions);
         rgVote = findViewById(R.id.rg_vote);
-        tvAnswer = findViewById(R.id.tv_answer);
-        etComments = findViewById(R.id.et_comments);
         rvComments = findViewById(R.id.rv_comments);
     }
 
@@ -99,17 +94,12 @@ public class VideoUploadActivity extends AppCompatActivity {
             if (!isVideoSelected) {
                 checkPermissionAndPickVideo();
             } else {
-                // Here you would typically upload the video to your server
-                // For now, we'll just simulate success
-                Toast.makeText(this, "Video uploaded successfully!", Toast.LENGTH_SHORT).show();
+                // Show questions
                 btnUpload.setVisibility(View.GONE);
-                btnSend.setVisibility(View.VISIBLE);
+                btnSend.setVisibility(View.GONE);
+                llQuestions.setVisibility(View.VISIBLE);
+                rvComments.setVisibility(View.VISIBLE);
             }
-        });
-
-        btnSend.setOnClickListener(v -> {
-            btnSend.setVisibility(View.GONE);
-            llQuestions.setVisibility(View.VISIBLE);
         });
 
         rgVote.setOnCheckedChangeListener((group, checkedId) -> {
@@ -122,26 +112,26 @@ public class VideoUploadActivity extends AppCompatActivity {
                 answer = getString(R.string.text_water_is_not_safe);
             }
             
-            rgVote.setVisibility(View.GONE);
-            tvAnswer.setText(answer);
-            tvAnswer.setVisibility(View.VISIBLE);
-            etComments.setVisibility(View.VISIBLE);
-            rvComments.setVisibility(View.VISIBLE);
-        });
+            // Add answer comment
+            Comment answerComment = new Comment(
+                answer,
+                Comment.TYPE_ANSWER,
+                false,
+                "avatar_bot"
+            );
+            commentAdapter.addComment(answerComment);
 
-        etComments.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE || 
-                (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && 
-                event.getAction() == KeyEvent.ACTION_DOWN)) {
-                
-                String commentText = etComments.getText().toString().trim();
-                if (!commentText.isEmpty()) {
-                    commentAdapter.addComment(new Comment(commentText));
-                    etComments.setText("");
-                    return true;
-                }
-            }
-            return false;
+            // Add expert reply
+            Comment replyComment = new Comment(
+                "Saran saya sih, bagusan dikuras dulu kak soalnya airrnya keruh sekali takutnya bahaya untuk dikonsumsi",
+                Comment.TYPE_REPLY,
+                true,
+                "avatar_expert"
+            );
+            commentAdapter.addComment(replyComment);
+
+            // Hide questions
+            llQuestions.setVisibility(View.GONE);
         });
     }
 
@@ -201,54 +191,23 @@ public class VideoUploadActivity extends AppCompatActivity {
         if (requestCode == PICK_VIDEO_REQUEST && resultCode == RESULT_OK && data != null) {
             selectedVideoUri = data.getData();
             if (selectedVideoUri != null) {
-                try {
-                    // Take persistent permission to access the file
-                    final int takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
-                    getContentResolver().takePersistableUriPermission(selectedVideoUri, takeFlags);
-                    
-                    // Generate thumbnail using MediaMetadataRetriever
-                    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-                    retriever.setDataSource(this, selectedVideoUri);
-                    
-                    // Try multiple frames until we get a non-null thumbnail
-                    Bitmap thumbnail = null;
-                    long[] timeOffsets = {0, 1000000, 2000000, 3000000}; // Try at 0s, 1s, 2s, 3s
-                    
-                    for (long timeOffset : timeOffsets) {
-                        thumbnail = retriever.getFrameAtTime(timeOffset, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
-                        if (thumbnail != null && !isBlackFrame(thumbnail)) {
-                            break;
-                        }
-                        if (thumbnail != null) {
-                            thumbnail.recycle();
-                            thumbnail = null;
-                        }
-                    }
-                    
-                    retriever.release();
 
-                    if (thumbnail != null) {
-                        // Set new size for thumbnail
-                        setThumbnailSize(true);
-                        
-                        // Scale the thumbnail to match the new size
-                        Bitmap scaledThumbnail = Bitmap.createScaledBitmap(
-                            thumbnail, 
-                            THUMBNAIL_SELECTED_WIDTH, 
-                            THUMBNAIL_SELECTED_HEIGHT, 
-                            true
-                        );
-                        ivThumbnail.setImageBitmap(scaledThumbnail);
-                        thumbnail.recycle();
-                        
-                        // Update UI state
-                        isVideoSelected = true;
-                        updateUploadButtonText(true);
-                    } else {
-                        Toast.makeText(this, "Could not generate thumbnail", Toast.LENGTH_SHORT).show();
-                        isVideoSelected = false;
-                        updateUploadButtonText(false);
-                    }
+                try {
+                    RequestOptions options = new RequestOptions()
+                            .frame(2_000_000)
+                            .override(THUMBNAIL_SELECTED_WIDTH, THUMBNAIL_SELECTED_HEIGHT)
+                            .centerCrop();
+                    Glide.with(this)
+                            .load(selectedVideoUri)
+                            .apply(options)
+                            .into(ivThumbnail);
+
+                    // Set new size for thumbnail
+                    setThumbnailSize(true);
+
+                    // Update UI state
+                    isVideoSelected = true;
+                    updateUploadButtonText(true);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(this, "Error creating thumbnail: " + e.getMessage(), Toast.LENGTH_SHORT).show();
